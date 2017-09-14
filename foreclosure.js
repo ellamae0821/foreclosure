@@ -9,7 +9,7 @@ var month = 0;
 var monthsUntilEvicted;
 
 function loan () {
-  var account = {
+  var account = { // "ACCOUNT" IS THE VARIABLE THAT IS CLOSURE
     borrowed :550000,
     balance :286000,
     monthlyPayment :1700,
@@ -25,7 +25,7 @@ function loan () {
     }
   }
 
-  function getBalance () {
+  function getBalance () {  // THIS IS REVEALING MODULE PATTERN
     return account.balance;
   }
 
@@ -53,13 +53,13 @@ function loan () {
 }
 
 function borrower (loan) {
-  var account = {
+  var account = { // "ACCOUNT" IS THE VARIABLE THAT IS CLOSURE
     monthlyIncome :1350,
     funds : 2800,
     loan : loan
   };
 
-  function getFunds () {
+  function getFunds () { // THIS IS REVEALING MODULE
     return account.funds;
   }
 
@@ -67,7 +67,7 @@ function borrower (loan) {
     if (account.funds > loan.getMonthlyPayment()) {
       account.funds -= loan.getMonthlyPayment();
       loan.receivePayment(loan.getMonthlyPayment());
-    }else{
+    } else {
       loan.receivePayment(account.funds);
       account.funds = 0;
     }
@@ -77,24 +77,25 @@ function borrower (loan) {
     account.funds += account.monthlyIncome;
   }
 
-  return {
+  return { //API
     getFunds : getFunds,
     makePayment : makePayment,
     payDay : payDay
   };
 }
 
-var stevesLoan = loan();
+stevesLoan = loan(); // stevesloan is now an object , to be passed to borrower
 
-var steve = borrower(stevesLoan);
+steve = borrower(stevesLoan);
 
-while (stevesLoan.isForeclosed() === false) {
+while (!stevesLoan.isForeclosed()) { // is not foreclosed
   steve.payDay();
   steve.makePayment();
   month++;
+
+  if (stevesLoan.getBalance <= 0) {
+    break;
+  }
 }
-
 monthsUntilEvicted = month;
-
-
 
